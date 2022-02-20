@@ -26,6 +26,14 @@ function Component() {
 # useEffect hook
 
 // Side effect
+- Events: Add/remove event listener
+- Observer pattern: Subscribe/unsubscribe
+- Closure
+- Timers: setInterval, setTimeout, clearInterval, clearTimeout
+- useState
+- Mounted/unmounted
+- Call API
+#
 
 1. useEffect(callback)
 - Gọi callback mỗi khi component re-render
@@ -81,6 +89,108 @@ export default function App() {
       <input type="file" onChange={handlePreviewAvatar} />
 
       {avatar && <img src={avatar.preview} width="80%" alt="" />}
+    </div>
+  );
+}
+```
+
+#
+# useLayoutEffect hook
+
+### Cách thức hoạt động khác với useEffect một chút
+#### useEffect
+1. Cập nhật lại state
+2. Cập nhật lại DOM (mutated)
+3. Render lại UI
+4. Gọi cleanup nếu deps thay đổi
+5. Gọi `useEffect callback`
+
+#### useLayoutEffect
+1. Cập nhật lại state
+2. Cập nhật lại DOM (mutated)
+3. Gọi cleanup nếu deps thay đổi (sync - đồng bộ)
+4. Gọi `useLayoutEffect callback` (sync - đồng bộ)
+5. Render lại UI
+
+Example:
+```jsx
+function Example() {
+  const [count, setCount] = useState(0)
+
+  // Khi dùng useEffect thì khi count đến giá trị 3 nó sẽ nhảy lên 4 trước và set lại bằng 0 ngay lập tức
+  // Điều đó sẽ thấy rõ hơn khi data là 1 list hoặc data lớn --> Sử dụng useLayoutEffect
+  useEffect(() => {
+    if (count > 3) 
+      setCount(0)
+  }, [count])
+
+  const handleRun = () => {
+    setCount(count + 1)
+  }
+
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={handleRun}>Run</button>
+    </div>
+  )
+}
+```
+
+#
+# useRef hook
+
+- Lưu các giá trị qua một tham chiếu bên ngoài
+
+Example:
+```jsx
+import { useRef, useState, useEffect } from "react";
+
+// let timerId 
+// Vi phạm cấu trúc code
+
+export default function App() {
+  const [count, setCount] = useState(60);
+  // let timerId  
+  // Sẽ là undefined mỗi khi component re-render --> tạo ra phạm vi mới
+
+  const timerId = useRef();
+  const preCount = useRef();
+  const h1Ref = useRef();
+
+  useEffect(() => {
+    // Luôn trỏ đến h1Ref ở DOM thật
+    const rect = h1Ref.current.getBoundingClientRect();
+
+    console.log(rect);
+  });
+
+  useEffect(() => {
+    preCount.current = count;
+  }, [count]);
+
+  const handleStart = () => {
+    timerId.current = setInterval(() => {
+      setCount((pre) => pre - 1);
+      // setCount(count - 1);  // Closure
+    }, 1000);
+
+    console.log("Start -> ", timerId.current);
+  };
+
+  const handleStop = () => {
+    clearInterval(timerId.current);
+
+    console.log("Stop -> ", timerId.current);
+  };
+
+  console.log(count, preCount.current);
+
+  return (
+    <div>
+      <h1 ref={h1Ref}>{count}</h1>
+      <button onClick={handleStart}>Start</button>
+      <button onClick={handleStop}>Stop</button>
     </div>
   );
 }
