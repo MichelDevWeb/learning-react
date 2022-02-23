@@ -22,6 +22,7 @@
 1. Callback luôn được gọi sau khi component mounted
 2. Cleanup function luôn được gọi trước khi component unmounted
 
+Example:
 ```jsx
     useEffect(() => {
         const handleScroll = () => setShowOnTop(window.scrollY >= 200);
@@ -38,6 +39,7 @@
 
 3. Cleanup function luôn được gọi trước khi callback được gọi (trừ lần mounted đầu tiên) 
 
+Example:
 ```jsx
 import { useState, useEffect } from "react";
 
